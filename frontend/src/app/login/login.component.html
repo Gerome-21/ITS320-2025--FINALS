@@ -11,15 +11,27 @@
         <!-- Email Input -->
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-          <input id="email" name="email" type="email" autocomplete="email" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="email"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+          >
         </div>
 
         <!-- Password Input -->
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            [(ngModel)]="password"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+          >
         </div>
 
         <!-- Submit Button -->

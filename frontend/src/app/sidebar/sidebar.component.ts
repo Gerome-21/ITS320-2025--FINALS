@@ -10,7 +10,7 @@ export class SidebarComponent {
   constructor(private router: Router) {}
 
   logout() {
-    // Perform any logout-related actions here (e.g., clearing user session)
-    this.router.navigate(['/login']); // Redirect to login page
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']); 
   }
 }
