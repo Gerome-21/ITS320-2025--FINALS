@@ -1,0 +1,29 @@
+<div class="grid grid-cols-3 gap-6">
+  <!-- Category Cards -->
+  <div *ngFor="let category of categories" class="bg-white p-4 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold text-gray-700">{{ category.category_name }}</h3>
+    <p class="text-sm text-gray-500 mb-4">{{ category.description }}</p>
+
+    <!-- Todo List Component for this category -->
+    <app-todo [categoryId]="category._id"></app-todo>
+  </div>
+
+  <!-- Add New Category Card -->
+  <div *ngIf="!showCreateForm"
+       (click)="openCreateCategoryForm()"
+       class="flex items-center justify-center w-64 h-80 border-2 border-dashed border-gray-400 rounded-lg bg-white shadow-md cursor-pointer">
+    <span class="text-gray-500 text-4xl font-bold">+</span>
+  </div>
+
+  <!-- Create Category Form -->
+  <div *ngIf="showCreateForm" class="bg-white p-6 rounded-lg shadow-md w-64 h-80 flex flex-col justify-center">
+    <h3 class="text-xl font-bold mb-4">Create New Category</h3>
+
+    <input type="text" [(ngModel)]="newCategoryName" placeholder="Category Name" class="border p-2 mb-4 rounded" />
+
+    <textarea [(ngModel)]="newCategoryDescription" placeholder="Description (optional)" class="border p-2 mb-4 rounded"></textarea>
+
+    <button (click)="createCategory()" class="bg-blue-600 text-white p-2 rounded mb-2">Create</button>
+    <button (click)="cancelCreate()" class="text-gray-600 p-2 rounded border border-gray-300">Cancel</button>
+  </div>
+</div>

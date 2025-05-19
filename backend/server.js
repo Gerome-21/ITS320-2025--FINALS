@@ -17,8 +17,8 @@ connectDB();
 
 // Auth Routes
 app.use('/auth', authRoutes);
-app.use('/categories', categoryRoute);
-app.use('/todos', todoRoute);
+app.use('/api/categories', categoryRoute);
+app.use('/api/todos', todoRoute);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

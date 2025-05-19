@@ -3,11 +3,16 @@ import { AuthService } from '../auth.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { CategoryComponent } from '../category/category.component'; // <-- import CategoryComponent
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [SidebarComponent, HttpClientModule],
+  imports: [
+    SidebarComponent,
+    HttpClientModule,
+    CategoryComponent // <-- add it here
+  ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

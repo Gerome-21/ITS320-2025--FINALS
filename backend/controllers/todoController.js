@@ -9,7 +9,7 @@ export const createTodo = async (req, res) => {
       todo_description,
       category_id,
       status,
-      created_by: req.userId
+      created_by: req.userId,
     });
 
     await todo.save();
@@ -17,5 +17,17 @@ export const createTodo = async (req, res) => {
     res.status(201).json({ message: 'Todo item created successfully', todo });
   } catch (error) {
     res.status(500).json({ message: 'Error creating todo item', error: error.message });
+  }
+};
+
+export const getTodosByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const todos = await Todo.find({ category_id: categoryId }).populate('created_by', 'username');
+
+    res.status(200).json(todos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching todos', error: error.message });
   }
 };

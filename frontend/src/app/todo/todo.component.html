@@ -1,1 +1,18 @@
-<p>todo works!</p>
+<div class="space-y-3 mt-4">
+  <div *ngFor="let todo of todos" class="p-3 bg-gray-100 rounded flex justify-between items-center">
+    <div>
+      <h4 class="text-md font-semibold text-gray-700">{{ todo.todo_name }}</h4>
+      <p class="text-sm text-gray-500">{{ todo.todo_description }}</p>
+      <span class="text-xs text-blue-500">{{ todo.status }}</span>
+    </div>
+  </div>
+
+  <!-- Input to add new todo -->
+  <input
+    type="text"
+    [(ngModel)]="newTodoName"
+    (keydown)="onKeyDown($event)"
+    placeholder="Type a new task and press Enter"
+    class="w-full p-2 border rounded"
+  />
+</div>
