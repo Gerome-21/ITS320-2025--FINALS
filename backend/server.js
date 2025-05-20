@@ -15,7 +15,7 @@ app.use(express.json());
 
 connectDB();
 
-// Auth Routes
+//Routes
 app.use('/auth', authRoutes);
 app.use('/api/categories', categoryRoute);
 app.use('/api/todos', todoRoute);

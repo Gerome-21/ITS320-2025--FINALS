@@ -7,7 +7,7 @@ const todoSchema = new mongoose.Schema({
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   status: {
     type: String,
-    enum: ['not_started', 'on_going', 'completed'],
+    enum: ['not_started', 'pending', 'completed'],
     default: 'not_started'
   },
   createdAt: { type: Date, default: Date.now },
