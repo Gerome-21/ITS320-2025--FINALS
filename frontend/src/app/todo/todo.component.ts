@@ -36,10 +36,11 @@ export class TodoComponent implements OnInit, OnChanges {
     );
 
     this.http
-      .get<any[]>(`http://localhost:3001/api/todos/category/${this.categoryId}`, { headers }) // <-- fixed url here
+      .get<any[]>(`http://localhost:3001/api/todos/category/${this.categoryId}`, { headers })
       .subscribe({
         next: (data) => {
-          this.todos = data;
+          // Initialize editing and confirmDelete flags per todo
+          this.todos = data.map(todo => ({ ...todo, editing: false, confirmDelete: false }));
         },
         error: (err) => {
           console.error('Failed to fetch todos:', err);
@@ -48,31 +49,76 @@ export class TodoComponent implements OnInit, OnChanges {
   }
 
   createTodo() {
-  if (!this.newTodoName.trim()) return;
+    if (!this.newTodoName.trim()) return;
 
-  const headers = new HttpHeaders().set(
-    'Authorization',
-    `Bearer ${localStorage.getItem('token')}`
-  );
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('token')}`
+    );
 
-  const payload = {
-    todo_name: this.newTodoName,
-    todo_description: '',
-    category_id: this.categoryId,
-    status: 'not_started',
-  };
+    const payload = {
+      todo_name: this.newTodoName,
+      todo_description: '',
+      category_id: this.categoryId,
+      status: 'not_started',
+    };
 
-  this.http.post('http://localhost:3001/api/todos/create', payload, { headers }).subscribe({
-    next: () => {
-      this.newTodoName = '';
-      this.getTodos();
-    },
-    error: (err) => {
-      console.error('Error creating todo:', err);
+    this.http.post('http://localhost:3001/api/todos/create', payload, { headers }).subscribe({
+      next: () => {
+        this.newTodoName = '';
+        this.getTodos();
+      },
+      error: (err) => {
+        console.error('Error creating todo:', err);
+      }
+    });
+  }
+
+  toggleEditTodo(todo: any) {
+    if (!todo.todo_name.trim()) {
+      alert('Todo name cannot be empty');
+      return;
     }
-  });
-}
 
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('token')}`
+    );
+
+    const payload = {
+      todo_name: todo.todo_name,
+      todo_description: todo.todo_description,
+      status: todo.status,
+    };
+
+    this.http.put(`http://localhost:3001/api/todos/${todo._id}`, payload, { headers }).subscribe({
+      next: () => {
+        todo.editing = false;
+        this.getTodos();
+      },
+      error: (err) => {
+        console.error('Error updating todo:', err);
+        alert('Failed to update todo');
+      }
+    });
+  }
+
+  deleteTodo(todoId: string) {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('token')}`
+    );
+
+    this.http.delete(`http://localhost:3001/api/todos/${todoId}`, { headers }).subscribe({
+      next: () => {
+        this.getTodos();
+      },
+      error: (err) => {
+        console.error('Error deleting todo:', err);
+        alert('Failed to delete todo');
+      }
+    });
+  }
 
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {

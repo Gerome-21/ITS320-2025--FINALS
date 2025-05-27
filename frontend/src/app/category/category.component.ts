@@ -31,7 +31,11 @@ export class CategoryComponent implements OnInit {
 
     this.http.get<any[]>('http://localhost:3001/api/categories', { headers }).subscribe({
       next: (data) => {
-        this.categories = data;
+        this.categories = data.map(cat => ({
+          ...cat,
+          editing: false,
+          confirmDelete: false
+        }));
       },
       error: (err) => {
         console.error('Failed to fetch categories:', err);
@@ -60,8 +64,7 @@ export class CategoryComponent implements OnInit {
     };
 
     this.http.post('http://localhost:3001/api/categories/create', newCategory, { headers }).subscribe({
-      next: (res: any) => {
-        alert('Category created successfully');
+      next: () => {
         this.showCreateForm = false;
         this.newCategoryName = '';
         this.newCategoryDescription = '';
@@ -78,5 +81,53 @@ export class CategoryComponent implements OnInit {
     this.showCreateForm = false;
     this.newCategoryName = '';
     this.newCategoryDescription = '';
+  }
+
+  toggleEditCategory(category: any) {
+    if (category.editing) {
+      this.updateCategory(category);
+    } else {
+      category.editing = true;
+    }
+  }
+
+  updateCategory(category: any) {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('token')}`
+    );
+
+    const payload = {
+      category_name: category.category_name,
+      description: category.description
+    };
+
+    this.http.put(`http://localhost:3001/api/categories/${category._id}`, payload, { headers }).subscribe({
+      next: () => {
+        category.editing = false;
+        this.getCategories();
+      },
+      error: (err) => {
+        console.error('Error updating category:', err);
+        alert('Failed to update category');
+      }
+    });
+  }
+
+  deleteCategory(categoryId: string) {
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${localStorage.getItem('token')}`
+    );
+
+    this.http.delete(`http://localhost:3001/api/categories/${categoryId}`, { headers }).subscribe({
+      next: () => {
+        this.getCategories();
+      },
+      error: (err) => {
+        console.error('Error deleting category:', err);
+        alert('Failed to delete category');
+      }
+    });
   }
 }

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TodoService {
-  private apiUrl = 'http://localhost:5000/api/todo';
+  private apiUrl = 'http://localhost:3001/api/todos';
 
   constructor(private http: HttpClient) {}
 
@@ -25,4 +25,14 @@ export class TodoService {
     );
     return this.http.post<any>(`${this.apiUrl}/create`, todoData, { headers });
   }
+
+  // 🔥 NEW: Get Completed Todos
+  getCompletedTodos(): Observable<any[]> {
+  const headers = new HttpHeaders().set(
+    'Authorization',
+    `Bearer ${localStorage.getItem('token')}`
+  );
+  return this.http.get<any[]>('http://localhost:3001/api/todos/status/completed', { headers });
+}
+
 }

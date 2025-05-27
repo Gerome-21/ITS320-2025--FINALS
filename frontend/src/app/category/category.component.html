@@ -1,8 +1,69 @@
 <div class="grid grid-cols-3 gap-6">
   <!-- Category Cards -->
   <div *ngFor="let category of categories" class="bg-white p-4 rounded-lg shadow-md">
-    <h3 class="text-xl font-bold text-gray-700">{{ category.category_name }}</h3>
-    <p class="text-sm text-gray-500 mb-4">{{ category.description }}</p>
+    <!-- Editable Name -->
+    <div *ngIf="!category.editing" class="flex justify-between items-center mb-2">
+      <h3 class="text-xl font-bold text-gray-700">{{ category.category_name }}</h3>
+      <div class="flex space-x-3">
+        <!-- Edit Icon Button -->
+        <button (click)="category.editing = true"
+                title="Edit"
+                class="text-blue-600 hover:text-blue-800 transition">
+          <!-- Pencil Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z" />
+          </svg>
+        </button>
+        <!-- Delete Icon Button -->
+        <button *ngIf="!category.confirmDelete" (click)="category.confirmDelete = true"
+                title="Delete"
+                class="text-red-600 hover:text-red-800 transition">
+          <!-- Trash Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div *ngIf="category.editing" class="mb-4">
+      <input type="text" [(ngModel)]="category.category_name"
+             class="border p-2 rounded w-full mb-2" />
+
+      <textarea [(ngModel)]="category.description"
+                class="border p-2 rounded w-full mb-2"></textarea>
+
+      <div class="flex space-x-2">
+        <button (click)="toggleEditCategory(category)"
+                class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition">Save</button>
+        <button (click)="category.editing = false"
+                class="border border-gray-300 text-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-100 transition">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Description (only if not editing) -->
+    <p *ngIf="!category.editing" class="text-sm text-gray-500 mb-4">
+      {{ category.description }}
+    </p>
+
+    <!-- Delete Confirmation UI -->
+    <div *ngIf="category.confirmDelete" class="mb-4 text-sm text-gray-700">
+      <p>Are you sure you want to delete this category?</p>
+      <div class="flex space-x-2 mt-2">
+        <button (click)="deleteCategory(category._id)"
+                class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition">Yes</button>
+        <button (click)="category.confirmDelete = false"
+                class="border border-gray-300 text-gray-600 px-3 py-1 rounded text-sm hover:bg-gray-100 transition">Cancel</button>
+      </div>
+    </div>
 
     <!-- Todo List Component for this category -->
     <app-todo [categoryId]="category._id"></app-todo>
@@ -11,7 +72,7 @@
   <!-- Add New Category Card -->
   <div *ngIf="!showCreateForm"
        (click)="openCreateCategoryForm()"
-       class="flex items-center justify-center w-64 h-80 border-2 border-dashed border-gray-400 rounded-lg bg-white shadow-md cursor-pointer">
+       class="flex items-center justify-center w-64 h-80 border-2 border-dashed border-gray-400 rounded-lg bg-white shadow-md cursor-pointer hover:border-blue-600 transition">
     <span class="text-gray-500 text-4xl font-bold">+</span>
   </div>
 
@@ -19,11 +80,13 @@
   <div *ngIf="showCreateForm" class="bg-white p-6 rounded-lg shadow-md w-64 h-80 flex flex-col justify-center">
     <h3 class="text-xl font-bold mb-4">Create New Category</h3>
 
-    <input type="text" [(ngModel)]="newCategoryName" placeholder="Category Name" class="border p-2 mb-4 rounded" />
+    <input type="text" [(ngModel)]="newCategoryName" placeholder="Category Name"
+           class="border p-2 mb-4 rounded" />
 
-    <textarea [(ngModel)]="newCategoryDescription" placeholder="Description (optional)" class="border p-2 mb-4 rounded"></textarea>
+    <textarea [(ngModel)]="newCategoryDescription" placeholder="Description (optional)"
+              class="border p-2 mb-4 rounded"></textarea>
 
-    <button (click)="createCategory()" class="bg-blue-600 text-white p-2 rounded mb-2">Create</button>
-    <button (click)="cancelCreate()" class="text-gray-600 p-2 rounded border border-gray-300">Cancel</button>
+    <button (click)="createCategory()" class="bg-blue-600 text-white p-2 rounded mb-2 hover:bg-blue-700 transition">Create</button>
+    <button (click)="cancelCreate()" class="text-gray-600 p-2 rounded border border-gray-300 hover:bg-gray-100 transition">Cancel</button>
   </div>
 </div>

@@ -1,9 +1,165 @@
-<div class="space-y-3 mt-4">
-  <div *ngFor="let todo of todos" class="p-3 bg-gray-100 rounded flex justify-between items-center">
-    <div>
-      <h4 class="text-md font-semibold text-gray-700">{{ todo.todo_name }}</h4>
-      <p class="text-sm text-gray-500">{{ todo.todo_description }}</p>
-      <span class="text-xs text-blue-500">{{ todo.status }}</span>
+<div class="space-y-4 mt-5 max-w-lg mx-auto">
+  <div *ngFor="let todo of todos"
+       class="p-3 bg-white rounded-lg shadow border border-gray-200 flex flex-col space-y-3 hover:shadow-md transition-shadow duration-200 max-w-lg">
+
+    <!-- Display mode -->
+    <div *ngIf="!todo.editing" class="flex justify-between items-start">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center space-x-2">
+          <!-- Status Icon -->
+          <ng-container [ngSwitch]="todo.status">
+            <svg *ngSwitchCase="'completed'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <svg *ngSwitchDefault xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3" />
+              <circle cx="12" cy="12" r="10" />
+            </svg>
+          </ng-container>
+
+          <!-- Todo Name with toggle -->
+          <h4
+            class="font-semibold text-gray-900 text-[0.85rem] leading-tight truncate max-w-[calc(100%-1.5rem)]"
+            [title]="todo.todo_name"
+          >
+            {{ todo.showFullName ? todo.todo_name : (todo.todo_name | slice:0:30) + (todo.todo_name.length > 30 ? '...' : '') }}
+          </h4>
+        </div>
+
+        <!-- View More / Less button if name is long -->
+        <button
+          *ngIf="todo.todo_name.length > 30"
+          (click)="todo.showFullName = !todo.showFullName"
+          class="text-xs text-blue-600 hover:underline mt-1 focus:outline-none"
+          aria-label="Toggle full task name"
+        >
+          {{ todo.showFullName ? 'View Less' : 'View More' }}
+        </button>
+
+        <!-- Description below the todo name -->
+        <p *ngIf="todo.todo_description" class="text-xs text-gray-500 mt-1 line-clamp-2">
+          {{ todo.todo_description }}
+        </p>
+
+        <!-- Status badge below description -->
+        <span
+          class="inline-block mt-2 px-2 py-0.5 text-[0.6rem] font-medium rounded-full"
+          [ngClass]="{
+            'bg-green-100 text-green-800': todo.status === 'completed',
+            'bg-yellow-100 text-yellow-800': todo.status === 'in_progress',
+            'bg-gray-100 text-gray-600': todo.status === 'not_started'
+          }"
+        >
+          {{ todo.status.replace('_', ' ') | titlecase }}
+        </span>
+      </div>
+
+      <!-- Buttons aligned vertically next to content -->
+      <div class="flex flex-col space-y-2 ml-4 flex-shrink-0">
+        <!-- Edit icon button -->
+        <button (click)="todo.editing = true" title="Edit"
+                class="text-blue-600 hover:text-blue-800 transition focus:outline-none focus:ring-1 focus:ring-blue-400 rounded p-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z" />
+          </svg>
+        </button>
+
+        <!-- Delete icon button -->
+        <button *ngIf="!todo.confirmDelete" (click)="todo.confirmDelete = true" title="Delete"
+                class="text-red-600 hover:text-red-800 transition focus:outline-none focus:ring-1 focus:ring-red-400 rounded p-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit mode -->
+    <div *ngIf="todo.editing" class="flex flex-col space-y-3">
+      <!-- todo_name input -->
+      <input
+        type="text"
+        [(ngModel)]="todo.todo_name"
+        class="border border-gray-300 p-2 rounded-md w-full text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 transition"
+        placeholder="Task name"
+        aria-label="Edit task name"
+      />
+      <label class="text-[0.65rem] text-gray-500 select-none">Task Name</label>
+
+      <!-- todo_description textarea -->
+      <textarea
+        [(ngModel)]="todo.todo_description"
+        class="border border-gray-300 p-2 rounded-md w-full text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 transition resize-none"
+        placeholder="Task description"
+        rows="3"
+        aria-label="Edit task description"
+      ></textarea>
+      <label class="text-[0.65rem] text-gray-500 select-none">Task Description</label>
+
+      <!-- status select -->
+      <select
+        [(ngModel)]="todo.status"
+        class="border border-gray-300 p-1.5 rounded-md w-full max-w-xs text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 transition"
+        aria-label="Edit task status"
+      >
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+      <label class="text-[0.65rem] text-gray-500 select-none">Status</label>
+
+      <!-- created at and updated at -->
+      <div class="text-[0.65rem] text-gray-600 space-y-1">
+        <div><strong>Created at:</strong> {{ todo.createdAt | date:'short' }}</div>
+        <div><strong>Updated at:</strong> {{ todo.updatedAt | date:'short' }}</div>
+      </div>
+
+      <div class="flex space-x-3">
+        <button
+          (click)="toggleEditTodo(todo)"
+          class="bg-green-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-green-700 transition focus:outline-none focus:ring-1 focus:ring-green-500"
+          aria-label="Save task edits"
+        >
+          Save
+        </button>
+        <button
+          (click)="todo.editing = false"
+          class="border border-gray-300 text-gray-700 px-3 py-1.5 rounded-md text-xs hover:bg-gray-100 transition focus:outline-none focus:ring-1 focus:ring-gray-300"
+          aria-label="Cancel task edits"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete confirmation -->
+    <div *ngIf="todo.confirmDelete" class="text-xs text-gray-600 mt-2">
+      <p>Are you sure you want to delete this task?</p>
+      <div class="flex space-x-2 mt-1">
+        <button
+          (click)="deleteTodo(todo._id)"
+          class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition focus:outline-none focus:ring-1 focus:ring-red-500"
+          aria-label="Confirm delete task"
+        >
+          Yes
+        </button>
+        <button
+          (click)="todo.confirmDelete = false"
+          class="border border-gray-300 text-gray-600 px-3 py-1 rounded text-xs hover:bg-gray-100 transition focus:outline-none focus:ring-1 focus:ring-gray-300"
+          aria-label="Cancel delete task"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
 
@@ -13,6 +169,7 @@
     [(ngModel)]="newTodoName"
     (keydown)="onKeyDown($event)"
     placeholder="Type a new task and press Enter"
-    class="w-full p-2 border rounded"
+    class="w-full p-3 border border-gray-300 rounded-md mt-4 text-xs placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-400 transition"
+    aria-label="Add new task"
   />
 </div>

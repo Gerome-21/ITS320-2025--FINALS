@@ -65,3 +65,15 @@ export const deleteTodo = async (req, res) => {
     res.status(500).json({ message: 'Error deleting todo item', error: error.message });
   }
 };
+
+// ✅ added this missing closing brace here ⬆️
+
+export const getCompletedTodos = async (req, res) => {
+  try {
+    const completedTodos = await Todo.find({ created_by: req.userId, status: 'completed' });
+
+    res.status(200).json(completedTodos);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching completed todos', error: error.message });
+  }
+};

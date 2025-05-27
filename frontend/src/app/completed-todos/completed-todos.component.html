@@ -1,0 +1,26 @@
+<main class="flex">
+  <!-- Sidebar Component -->
+  <app-sidebar class="fixed top-0 left-0 w-64 h-screen bg-white border-r border-gray-300 shadow-lg"></app-sidebar>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-6 flex-1 bg-gray-50 min-h-screen">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Completed Todos</h2>
+
+    <ul *ngIf="completedTodos.length > 0; else noTodos" class="space-y-3">
+      <li *ngFor="let todo of completedTodos"
+          class="p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm hover:shadow-md transition flex flex-col space-y-1">
+        
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-semibold text-green-900 break-words">{{ todo.todo_name }}</h3>
+          <span class="text-[0.65rem] font-medium bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Completed</span>
+        </div>
+        
+        <p class="text-xs text-green-800 leading-snug break-words">{{ todo.todo_description }}</p>
+      </li>
+    </ul>
+
+    <ng-template #noTodos>
+      <p class="text-gray-500 italic">No completed todos found.</p>
+    </ng-template>
+  </div>
+</main>
